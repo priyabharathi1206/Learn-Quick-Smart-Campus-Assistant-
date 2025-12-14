@@ -1,3 +1,4 @@
 .env
 smartcampus_env/
 trash/
+__pycache__/
