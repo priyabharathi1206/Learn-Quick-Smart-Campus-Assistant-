@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCQ Practice</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f9ff;
+            margin: 0;
+            padding: 30px;
+            text-align: center;
+            color: #333;
+        }
+
+        h1 {
+            color: #2a6fcf;
+            margin-bottom: 20px;
+        }
+
+        .input-box {
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            border: 2px solid #d6e8ff;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 18px;
+            background: #2a6fcf;
+            color: white;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #1c54a3;
+        }
+
+        .mcq-container {
+            margin-top: 25px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .question-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #d6e8ff;
+        }
+
+        .options button {
+            display: block;
+            width: 100%;
+            margin: 6px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #d6e8ff;
+            
+            transition: 0.2s;
+            background: #ffffff; 
+            color: #000;        
+
+        }
+
+        .options button:hover {
+            background: #e6f0ff;
+        }
+
+        .correct {
+            background: #c4f7c4 !important;
+            border-color: #2ecc71 !important;
+        }
+
+        .wrong {
+            background: #ffc4c4 !important;
+            border-color: #e74c3c !important;
+        }
+
+        .answer-key {
+            background: #fff8d4;
+            border-left: 4px solid #f1c40f;
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        #showAnswersBtn {
+            margin-top: 20px;
+        }
+           .back-btn {
+    background: #2563EB;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+.back-btn:hover {
+    background: #1E40AF;
+}
+    </style>
+</head>
+<body>
+
+    <h1>MCQ Practice</h1>
+    <button onclick="goBack()" class="back-btn">⬅ Back</button>
+
+    <!-- Number of Questions Input -->
+    <div class="input-box">
+        <input type="number" id="questionCount" placeholder="Enter number of questions">
+        <button onclick="loadMCQs()">Start</button>
+    </div>
+
+    <!-- Container for MCQs -->
+    <div id="mcqContainer" class="mcq-container"></div>
+
+    <!-- Show All Answers -->
+    <button id="showAnswersBtn" onclick="showAllAnswers()" style="display:none;">
+        Show All Answers
+    </button>
+
+<script>
+
+async function loadMCQs() {
+    let count = document.getElementById("questionCount").value;
+
+    if (!count || count <= 0) {
+        alert("Enter a valid number of questions");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("num_questions", count);
+
+    try {
+        const response = await fetch("/mcq", {
+            method: "POST",
+            body: formData
+        });
+
+        console.log("STATUS:", response.status);
+
+        const data = await response.json();
+        console.log("API RESPONSE:", data);
+
+        if (data.error) {
+            // alert(data.error);
+            return;
+        }
+
+        if (!data.mcqs || data.mcqs.length === 0) {
+            alert("No MCQs returned from API");
+            return;
+        }
+
+        generateMCQs(data.mcqs);
+
+    } catch (err) {
+        console.error("Fetch error:", err);
+        alert("Unable to connect to server!");
+    }
+}
+
+
+// Render MCQs 
+function generateMCQs(mcqs) {
+    const container = document.getElementById("mcqContainer");
+    container.innerHTML = "";
+
+    mcqs.forEach((mcq, index) => {
+        let card = document.createElement("div");
+        card.classList.add("question-card");
+
+        card.innerHTML = `
+            <h3>Q${index + 1}. ${mcq.question}</h3>
+            <div class="options" id="options-${index}"></div>
+            <div class="answer-key" id="answer-${index}">
+                ✔ Correct Answer: <b>${mcq.options[mcq.answer]}</b>
+            </div>
+        `;
+
+        container.appendChild(card);
+
+        let optionsDiv = document.getElementById(`options-${index}`);
+
+        mcq.options.forEach((opt, i) => {
+            let btn = document.createElement("button");
+            btn.innerText = opt;
+
+            btn.onclick = function () {
+                checkAnswer(index, i, mcq.answer);
+            };
+
+            optionsDiv.appendChild(btn);
+        });
+    });
+
+    document.getElementById("showAnswersBtn").style.display = "inline-block";
+}
+
+
+// Answer Checking
+function checkAnswer(qIndex, chosen, correct) {
+    let options = document.querySelectorAll(`#options-${qIndex} button`);
+
+    options.forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === correct) btn.classList.add("correct");
+        if (i === chosen && chosen !== correct) btn.classList.add("wrong");
+    });
+}
+
+
+// Show All Answers
+let answersVisible = false;
+
+function showAllAnswers() {
+    const answerSections = document.querySelectorAll(".answer-key");
+
+    if (!answersVisible) {
+        answerSections.forEach(div => div.style.display = "block");
+        document.getElementById("showAnswersBtn").innerText = "Hide All Answers";
+        answersVisible = true;
+    } else {
+        answerSections.forEach(div => div.style.display = "none");
+        document.getElementById("showAnswersBtn").innerText = "Show All Answers";
+        answersVisible = false;
+    }
+}
+
+
+    function goBack() {
+    window.location.href = "/features";
+}
+</script>
+
+</body>
+</html>

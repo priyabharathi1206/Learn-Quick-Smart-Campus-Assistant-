@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnQuick - Home</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --accent: #3b82f6;
+            --bg-light: #f8fafc;
+            --text-dark: #0f172a;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Poppins", sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        /* NAVBAR */
+        nav {
+            width: 100%;
+            padding: 18px 40px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: fixed;
+            top: 0;
+            z-index: 10;
+        }
+
+        nav .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* CENTER SECTION */
+        .center-box {
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 60px;
+        }
+
+        .title {
+            font-size: 60px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-bottom: 30px;
+        }
+
+        .upload-card {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            width: 350px;
+        }
+
+        .upload-card input[type="file"] {
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .btn {
+            width: 120px;
+            padding: 10px 15px;
+            border-radius: 50px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .proceed {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        .delete {
+            background: #ef4444;
+            color: var(--white);
+            margin-left: 10px;
+        }
+
+        .btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        
+
+
+
+        .input-wrapper {
+    position: relative;
+    width: 320px;
+}
+
+.input-box {
+    padding: 18px 50px 18px 18px; 
+    width: 85%;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 16px;
+}
+
+.mic-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 22px;
+    color: #6b7280;
+    transition: 0.2s;
+}
+
+.mic-btn.listening {
+    color: red;
+}
+   </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">LearnQuick</div>
+        <ul>
+            <li><a href="#">Home</a></li>
+           
+        </ul>
+    </nav>
+
+    <div class="center-box">
+        <div class="title" style="font-size: 80px; color: var(--primary); letter-spacing: 2px; font-weight: 900; text-shadow: 0 3px 10px rgba(37, 99, 235, 0.3);">LearnQuick</div>
+
+        <div style="margin-top: 20px; text-align:center; display:flex; justify-content:center; gap:15px; align-items:center;">
+            
+            
+            <div class="input-wrapper">
+    <input type="text" placeholder="Enter text or description here..." id="typebox" class="input-box" style="margin: 1px;"/>
+    
+    <span id="micBtn" class="mic-btn">🎤</span>
+</div>
+
+            
+            <div style="position:relative;">
+                <input type="file" id="fileInput"
+                    style="padding: 15px; width: 300px; border: 2px solid #cbd5e1; border-radius: 12px; font-size: 15px; cursor:pointer; background:#ffffff;margin: 20px;" />
+
+                
+                <svg id="deleteIcon" width="30" height="30" viewBox="0 0 24 24" fill="#ef4444" 
+                    style="cursor:pointer; display:none; position:absolute; right:-40px; top:50%; transform:translateY(-50%);">
+                    <path d="M3 6h18" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M8 6v12" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M16 6v12" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M5 6l1 14c0 1 1 2 2 2h8c1 0 2-1 2-2l1-14" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+        </div>
+        
+
+        <div style="text-align:center; margin-top:25px;">
+            <button class="btn proceed" id="proceedBtn" disabled onclick="uploadFiles()">Proceed</button>
+        </div>
+        <p id="uploadStatus" style="margin-top:10px; color: green; font-weight:600;"></p>
+
+
+            
+    </div>
+
+    
+    <script>
+    const BASE_URL = "http://127.0.0.1:8000";
+
+    const fileInput = document.getElementById("fileInput");
+    const proceedBtn = document.getElementById("proceedBtn");
+    const deleteIcon = document.getElementById("deleteIcon");
+
+    
+    fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+            proceedBtn.disabled = false;
+            deleteIcon.style.display = "block";
+        }
+    });
+
+   
+    deleteIcon.addEventListener("click", () => {
+        fileInput.value = "";
+        proceedBtn.disabled = true;
+        deleteIcon.style.display = "none";
+    });
+
+    async function uploadFiles() {
+    let files = document.getElementById("fileInput").files;
+    if (!files.length) {
+        alert("Please select a file!");
+        return;
+    }
+
+    let formData = new FormData();
+    for (let file of files) {
+        formData.append("files", file);
+    }
+
+    try {
+        let res = await fetch(`${BASE_URL}/upload`, {
+            method: "POST",
+            body: formData
+        });
+
+        if (!res.ok) {
+            alert("Upload failed!");
+            return;
+        }
+
+        let data = await res.json();
+        alert("Uploaded successfully!");
+
+        
+        window.location.href = "/features";
+
+
+    } catch (error) {
+        console.error(error);
+        alert("Error uploading file!");
+    }
+}
+
+
+// ---- Speech To Text Inside Input Box ----
+let recognition;
+let isListening = false;
+
+if ("webkitSpeechRecognition" in window) {
+    recognition = new webkitSpeechRecognition();
+    recognition.lang = "en-IN";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = function(event) {
+        document.getElementById("typebox").value =
+            event.results[0][0].transcript;
+    };
+
+    recognition.onend = function() {
+        isListening = false;
+        document.getElementById("micBtn").classList.remove("listening");
+    };
+} else {
+    alert("Speech Recognition not supported in your browser.");
+}
+
+document.getElementById("micBtn").addEventListener("click", () => {
+    if (!isListening) {
+        recognition.start();
+        isListening = true;
+        document.getElementById("micBtn").classList.add("listening");
+    } else {
+        recognition.stop();
+        isListening = false;
+        document.getElementById("micBtn").classList.remove("listening");
+    }
+});
+
+</script>
+
+</body>
+</html>

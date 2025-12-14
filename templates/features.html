@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LearnQuick – Features</title>
+<style>
+    :root {
+        --primary: #2563EB;
+        --primary-dark: #1E40AF;
+        --bg-light: #F8FAFC;
+        --text-dark: #0F172A;
+        --card-bg: #ffffff;
+    }
+    body {
+        font-family: Arial, sans-serif;
+        background: var(--bg-light);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    h1 {
+        margin-top: 40px;
+        font-size: 50px;
+        color: var(--primary);
+        font-weight: 800;
+        text-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+    }
+    .container {
+        display: flex;
+        gap: 25px;
+        margin-top: 50px;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-width: 1000px;
+    }
+    .card {
+        background: var(--card-bg);
+        width: 220px;
+        padding: 25px;
+        border-radius: 18px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        text-align: center;
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--text-dark);
+        cursor: pointer;
+        transition: 0.3s;
+        border-top: 6px solid var(--primary);
+    }
+    .card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    }
+         .back-btn {
+    background: #2563EB;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: 0.3s;
+}
+.back-btn:hover {
+    background: #1E40AF;
+}
+    
+</style>
+</head>
+<body>
+
+<h1>Features</h1>
+
+<button onclick="goBack()" class="back-btn">⬅ Back</button>
+<div class="container">
+    <div class="card" onclick="goTo('summary-page')">Summarization</div>
+    <div class="card" onclick="goTo('mcq-page')">MCQ Generator</div>
+    <div class="card" onclick="goTo('ask-page')">Ask a Question</div>
+    <div class="card" onclick="goTo('topics')">Topics-keywords</div>
+</div>
+<script>
+function goTo(page) {
+    window.location.href = `/${page}`;
+}
+
+
+    function goBack() {
+    window.location.href = "/";
+}
+</script>
+
+
+
+
+
+
+</body>
+</html>

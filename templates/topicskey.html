@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Topics & Keywords</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h2 { color: #2563eb; }
+        .topic { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+        .keywords { margin-left: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Extracted Topics & Keywords</h1>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% else %}
+        {% for topicObj in topics %}
+            <div class="topic">
+                <h2>{{ topicObj.topic }}</h2>
+                <p class="keywords">Keywords: {{ topicObj.keywords | join(", ") }}</p>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+</body>
+</html>
